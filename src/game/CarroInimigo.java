@@ -19,15 +19,15 @@ public class CarroInimigo implements Serializable {
 		speed(fase);
 		cont = 0;
 		Random r = new Random();
-		int i = r.nextInt(2);
-		if (i == 0)
+		int i = r.nextInt(100);
+		if (i % 2 == 0)
 			lado = true;
 		else
 			lado = false;
 	}
 	
 	public void atualizar(){
-		y++;
+		y = y + 4;
 	}
 
 	public void draw1(Graphics g) {
@@ -44,6 +44,8 @@ public class CarroInimigo implements Serializable {
 
 				}
 			}
+			g.setColor(Color.white);
+			g.drawRect(p1(array), y, 35 * 3, 35 * 4);
 			coliderInimigo = new Rectangle(p1(array), y, 35 * 3, 35 * 4);
 		} else {
 			for (int i = 0; i < carro.length; i++) {
@@ -55,6 +57,8 @@ public class CarroInimigo implements Serializable {
 					g.fillRect(j * size + p1(array), i * size + y, size, size);
 				}
 			}
+			g.setColor(Color.white);
+			g.drawRect(p1(array), y, 35 * 3, 35 * 4);
 			coliderInimigo = new Rectangle(p1(array), y, 35 * 3, 35 * 4);
 		}
 	}

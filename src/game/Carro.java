@@ -49,6 +49,10 @@ public class Carro implements Serializable{
 	public long getPontuacao() {
 		return pontuacao;
 	}
+	
+	public String getNome(){
+		return nomeCarro;
+	}
 
 	public void draw(Graphics g) {
 		int size = 35;
@@ -71,6 +75,8 @@ public class Carro implements Serializable{
 				}
 			}
 			coliderPlayer = new Rectangle(35 * pi(lado), 35 * 16, 35 * 3, 35 * 4 - 15);
+		} else {
+			coliderPlayer = new Rectangle();
 		}
 	}
 	

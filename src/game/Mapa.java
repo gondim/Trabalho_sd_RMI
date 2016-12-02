@@ -81,6 +81,8 @@ public class Mapa implements Serializable {
 			array2.get(1).draw2(g);
 			array3.get(1).draw3(g);
 		}
+		
+		colidiu();
 	}
 	
 	public void atualizar() {

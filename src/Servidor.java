@@ -1,21 +1,16 @@
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.image.BufferStrategy;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
-import javax.swing.JFrame;
+import java.awt.Graphics;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.server.UnicastRemoteObject;
 
 import com.google.gson.Gson;
 
-import api.ConexaoListener;
 import api.MensagemListener;
 import api.conexao.Conexao;
-import api.peer.Peer;
 import game.Key;
 import game.Mapa;
 import game.Menu;
@@ -48,23 +43,17 @@ public class Servidor extends UnicastRemoteObject implements SevidorInterface {
 
 	public static void main(String[] args) {
 
-		Peer peer = Peer.getIntance(9500, "UDP");
-		System.out.println("servidor iniciado");
-		peer.iniciarRecebimentoConexao(new ConexaoListener() {
-
-			@Override
-			public void recebidoConexao(Conexao conexao) {
-
-				gerenciarConexao(conexao);
-
-			}
-		});
-
-		Servidor s;
 		try {
-			s = new Servidor();
+			System.out.println("chamando servidor...");
+			LocateRegistry.createRegistry(3000);
+			System.setProperty("java.rmi.server.hostname", "172.18.9.37");
+			Servidor s = new Servidor();
+			Naming.rebind("rmi://172.18.9.37:3000/Servidor", s);
 			s.frames();
 		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -143,20 +132,18 @@ public class Servidor extends UnicastRemoteObject implements SevidorInterface {
 		 * Toolkit.getDefaultToolkit().getImage(getClass().getResource(
 		 * "GameOver.png")); g.drawImage(image, 0, 0, mapa.mapa[0].length * 35 -
 		 * 4 * 35, mapa.mapa.length * 35, null); g.setColor(Color.white);
-		 * g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
-		 * g.drawString("Aperte enter para jogar novamente", 10, 680); if
-		 * (key.enter) { restart(); } } else {
+		 * g.setFont(new Font("TimesRoman", Font.PLAIN, 30)); g.drawString(
+		 * "Aperte enter para jogar novamente", 10, 680); if (key.enter) {
+		 * restart(); } } else {
 		 */
-		if(jogador < 3){
-			System.out.println(jogador);
+		if (jogador < 3) {
 		} else {
 			if (mapa.carro1.isColidiu() && mapa.carro2.isColidiu() && mapa.carro3.isColidiu()) {
-				System.out.println("Morreu");
+				
 			} else {
 				mapa.jogar = true;
 				mapa.atualizar();
 				mapa.mover(key);
-				System.out.println("pintando");
 			}
 		}
 
@@ -191,9 +178,9 @@ public class Servidor extends UnicastRemoteObject implements SevidorInterface {
 		} else if (massage.equals("carro3e")) {
 			key.g = true;
 			mapa.mover(key);
-		} else if (massage.equals("enter")) {
-			key.enter = true;
-			mapa.mover(key);
+		} else if (massage.equals("restart")) {
+			if(mapa.carro1.isColidiu() && mapa.carro2.isColidiu() && mapa.carro3.isColidiu())
+				restart();
 		}
 	}
 
@@ -207,6 +194,17 @@ public class Servidor extends UnicastRemoteObject implements SevidorInterface {
 	public void addJogador() throws RemoteException {
 		jogador++;
 		System.out.println(jogador);
+	}
+
+	@Override
+	public void colidiu(String carro) throws RemoteException {
+		if (carro.equals(mapa.carro1.getNome())) {
+			mapa.carro1.setColidiu(true);
+		} else if (carro.equals(mapa.carro2.getNome())) {
+			mapa.carro2.setColidiu(true);
+		} else if (carro.equals(mapa.carro3.getNome())) {
+			mapa.carro3.setColidiu(true);
+		}
 	}
 
 }

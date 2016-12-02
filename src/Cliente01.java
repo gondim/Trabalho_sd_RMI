@@ -84,6 +84,13 @@ public class Cliente01 extends JFrame implements KeyListener {
 				e.printStackTrace();
 			}
 		}
+		if(arg0.getKeyCode() == KeyEvent.VK_ENTER){
+			try {
+				servidor.mover("restart");
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -134,7 +141,29 @@ public class Cliente01 extends JFrame implements KeyListener {
 				g.drawString("Aperte enter para jogar novamente", 10, 680);
 			} else {
 				mapa.draw(g);
-				
+				if(mapa.carro1.isColidiu()){
+					try {
+						servidor.colidiu(mapa.carro1.getNome());
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				if(mapa.carro2.isColidiu()){
+					try {
+						servidor.colidiu(mapa.carro2.getNome());
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+				}
+				if(mapa.carro3.isColidiu()){
+					try {
+						servidor.colidiu(mapa.carro3.getNome());
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}
