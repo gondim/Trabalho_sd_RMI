@@ -69,7 +69,7 @@ public class Janela extends JFrame {
 					restart();
 				}
 			} else {
-				mapa.draw(g);
+				mapa.atualizar();
 				mapa.mover(key);
 			}
 		}

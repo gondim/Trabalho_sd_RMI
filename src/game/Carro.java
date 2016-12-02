@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class Carro implements Serializable{
 	private String nomeCarro;
 	private int[][] carro = { { 0, 1, 0 }, { 1, 2, 1 }, { 0, 1, 0 }, { 1, 1, 1 } };
@@ -71,6 +72,10 @@ public class Carro implements Serializable{
 			}
 			coliderPlayer = new Rectangle(35 * pi(lado), 35 * 16, 35 * 3, 35 * 4 - 15);
 		}
+	}
+	
+	public void mover(){
+		
 	}
 
 	public int pi(int lado) {

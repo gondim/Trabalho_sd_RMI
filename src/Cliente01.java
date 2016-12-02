@@ -7,30 +7,39 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
-import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.util.Scanner;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 
 import javax.swing.JFrame;
 
 import com.google.gson.Gson;
 
-import api.ConexaoListener;
-import api.MensagemListener;
 import api.conexao.Conexao;
-import api.peer.Peer;
 import game.Mapa;
 import game.Menu;
 
 @SuppressWarnings("serial")
 public class Cliente01 extends JFrame implements KeyListener {
-
+	static SevidorInterface servidor;
 	static Mapa mapa;
 	static int jogador;
 	static Menu menu;
 	static Gson gson = new Gson();
 
 	public Cliente01() {
+		try {
+			servidor = (SevidorInterface) Naming.lookup("rmi://172.18.9.37:3000/Servidor");
+			System.out.println(servidor);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+		}
 		jogador = 0;
 		this.setSize(200, 200);
 		addKeyListener(this);
@@ -48,46 +57,33 @@ public class Cliente01 extends JFrame implements KeyListener {
 
 	public static void main(String[] args) throws UnknownHostException {
 
-		Peer peer = Peer.getIntance(9700, "UDP");
-
-		peer.iniciarRecebimentoConexao(new ConexaoListener() {
-
-			public void recebidoConexao(Conexao conexao) {
-
-			}
-		});
-
-		System.out.println("Cliente iniciado");
-
-		c = peer.getConexao(InetAddress.getByName("172.18.9.37"), 9500);
-
-		c.iniciarRecebimento(new MensagemListener() {
-
-			@Override
-			public void recebido(String mensagem) {
-
-				// if (mensagem instanceof Mapa) {
-				mapa = gson.fromJson(mensagem, Mapa.class);
-
-				// }
-				// Teste teste = (Teste) mensagem;
-				// System.out.println("Servidor me disse: " + teste.getTeste());
-			}
-		});
-		
-		c.send("inicio");
-
 		Cliente01 cliente = new Cliente01();
+		try {
+			servidor.addJogador();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
 		cliente.setVisible(true);
 		cliente.frames();
 	}
 
 	@Override
 	public void keyPressed(KeyEvent arg0) {
-		if (arg0.getKeyCode() == KeyEvent.VK_RIGHT)
-			c.send("carro1d");
-		if (arg0.getKeyCode() == KeyEvent.VK_LEFT)
-			c.send("carro1e");
+		if (arg0.getKeyCode() == KeyEvent.VK_RIGHT) {
+			try {
+				servidor.mover("carro1d");
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+		if (arg0.getKeyCode() == KeyEvent.VK_LEFT){
+			try {
+				servidor.mover("carro1e");
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -108,9 +104,9 @@ public class Cliente01 extends JFrame implements KeyListener {
 		while (true) {
 			buffer();
 			try {
-				c.send("mapa");
+				mapa = gson.fromJson(servidor.atualizar(), Mapa.class);
 				Thread.sleep(100);
-			} catch (InterruptedException e) {
+			} catch (InterruptedException | RemoteException e) {
 				e.printStackTrace();
 			}
 		}
@@ -136,11 +132,9 @@ public class Cliente01 extends JFrame implements KeyListener {
 				g.setColor(Color.white);
 				g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
 				g.drawString("Aperte enter para jogar novamente", 10, 680);
-				// if (key.enter) {
-				// restart();
-				// }
 			} else {
 				mapa.draw(g);
+				
 			}
 		}
 	}
@@ -149,7 +143,6 @@ public class Cliente01 extends JFrame implements KeyListener {
 		BufferStrategy bf = this.getBufferStrategy();
 		Graphics g = null;
 		try {
-			c.send("mapa");
 			g = bf.getDrawGraphics();
 			jogar(g);
 		} finally {

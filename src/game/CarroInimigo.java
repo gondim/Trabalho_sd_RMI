@@ -25,6 +25,10 @@ public class CarroInimigo implements Serializable {
 		else
 			lado = false;
 	}
+	
+	public void atualizar(){
+		y++;
+	}
 
 	public void draw1(Graphics g) {
 		int size = 35;
@@ -53,7 +57,6 @@ public class CarroInimigo implements Serializable {
 			}
 			coliderInimigo = new Rectangle(p1(array), y, 35 * 3, 35 * 4);
 		}
-		y = y + velocidade;
 	}
 	
 	public void draw2(Graphics g) {
@@ -83,7 +86,6 @@ public class CarroInimigo implements Serializable {
 			}
 			coliderInimigo = new Rectangle(p2(array), y, 35 * 3, 35 * 4);
 		}
-		y = y + velocidade;
 	}
 	
 	public void draw3(Graphics g) {
@@ -113,7 +115,6 @@ public class CarroInimigo implements Serializable {
 			}
 			coliderInimigo = new Rectangle(p3(array), y, 35 * 3, 35 * 4);
 		}
-		y = y + velocidade;
 	}
 
 	public int getY() {

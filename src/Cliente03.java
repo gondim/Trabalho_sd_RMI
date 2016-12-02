@@ -140,7 +140,7 @@ public class Cliente03 extends JFrame implements KeyListener {
 				// restart();
 				// }
 			} else {
-				mapa.draw(g);
+				mapa.atualizar();
 			}
 		}
 	}

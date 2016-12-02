@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 import javax.swing.JFrame;
 
@@ -18,7 +20,7 @@ import game.Key;
 import game.Mapa;
 import game.Menu;
 
-public class Servidor extends JFrame {
+public class Servidor extends UnicastRemoteObject implements SevidorInterface {
 
 	static Key key;
 	static int jogador;
@@ -26,20 +28,22 @@ public class Servidor extends JFrame {
 	static Menu menu;
 	static Gson gson = new Gson();
 
-	public Servidor() {
+	public Servidor() throws RemoteException {
+		super();
 		jogador = 0;
 		key = new Key();
 		mapa = new Mapa();
 		menu = new Menu();
-		this.setTitle("Servidor");
-		this.addKeyListener(key);
-		this.setSize(mapa.mapa[0].length * 35, mapa.mapa.length * 35);
+		System.out.println("shark boy");
+		// this.setTitle("Servidor");
+		// this.addKeyListener(key);
+		// this.setSize(mapa.mapa[0].length * 35, mapa.mapa.length * 35);
 		// this.setUndecorated(true);
-		this.setLocationRelativeTo(null);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setResizable(false);
-		this.setVisible(true);
-		this.createBufferStrategy(2);
+		// this.setLocationRelativeTo(null);
+		// this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// this.setResizable(false);
+		// this.setVisible(true);
+		// this.createBufferStrategy(2);
 	}
 
 	public static void main(String[] args) {
@@ -56,8 +60,14 @@ public class Servidor extends JFrame {
 			}
 		});
 
-		Servidor s = new Servidor();
-		s.frames();
+		Servidor s;
+		try {
+			s = new Servidor();
+			s.frames();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
@@ -84,10 +94,7 @@ public class Servidor extends JFrame {
 				} else if (mensagem.equals("carro3e")) {
 					key.g = true;
 					mapa.mover(key);
-				} else if (mensagem.equals("inicio")) {
-					jogador++;
-					System.out.println(jogador);
-				} else if (mensagem.equals("enter")){
+				} else if (mensagem.equals("enter")) {
 					key.enter = true;
 					mapa.mover(key);
 				}
@@ -107,7 +114,7 @@ public class Servidor extends JFrame {
 		menu.draw(g);
 	}
 
-	private void frames() {
+	public void frames() {
 		while (true) {
 			buffer();
 			try {
@@ -122,45 +129,84 @@ public class Servidor extends JFrame {
 		mapa = new Mapa();
 	}
 
-	public void jogar(Graphics g) {
-
-		if (jogador < 3) {
-			Image image = Toolkit.getDefaultToolkit().getImage(getClass().getResource("Inicio.png"));
-			g.drawImage(image, 0, 0, mapa.mapa[0].length * 35, mapa.mapa.length * 35, null);
-			g.setColor(Color.black);
-			g.fillRect(0, 0, mapa.mapa[0].length * 35, mapa.mapa.length * 35);
-			g.setColor(Color.white);
-			g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
-			g.drawString("Espere os jogadores", 10, 680);
+	public void jogar() {
+		/*
+		 * if (jogador < 3) { Image image =
+		 * Toolkit.getDefaultToolkit().getImage(getClass().getResource(
+		 * "Inicio.png")); g.drawImage(image, 0, 0, mapa.mapa[0].length * 35,
+		 * mapa.mapa.length * 35, null); g.setColor(Color.black); g.fillRect(0,
+		 * 0, mapa.mapa[0].length * 35, mapa.mapa.length * 35);
+		 * g.setColor(Color.white); g.setFont(new Font("TimesRoman", Font.PLAIN,
+		 * 30)); g.drawString("Espere os jogadores", 10, 680); } else {
+		 * mapa.jogar = true; if (mapa.carro1.isColidiu() &&
+		 * mapa.carro2.isColidiu() && mapa.carro3.isColidiu()) { Image image =
+		 * Toolkit.getDefaultToolkit().getImage(getClass().getResource(
+		 * "GameOver.png")); g.drawImage(image, 0, 0, mapa.mapa[0].length * 35 -
+		 * 4 * 35, mapa.mapa.length * 35, null); g.setColor(Color.white);
+		 * g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+		 * g.drawString("Aperte enter para jogar novamente", 10, 680); if
+		 * (key.enter) { restart(); } } else {
+		 */
+		if(jogador < 3){
+			System.out.println(jogador);
 		} else {
-			mapa.jogar = true;
 			if (mapa.carro1.isColidiu() && mapa.carro2.isColidiu() && mapa.carro3.isColidiu()) {
-				Image image = Toolkit.getDefaultToolkit().getImage(getClass().getResource("GameOver.png"));
-				g.drawImage(image, 0, 0, mapa.mapa[0].length * 35 - 4 * 35, mapa.mapa.length * 35, null);
-				g.setColor(Color.white);
-				g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
-				g.drawString("Aperte enter para jogar novamente", 10, 680);
-				if (key.enter) {
-					restart();
-				}
+				System.out.println("Morreu");
 			} else {
-				mapa.draw(g);
+				mapa.jogar = true;
+				mapa.atualizar();
 				mapa.mover(key);
+				System.out.println("pintando");
 			}
 		}
+
+		/*
+		 * } }
+		 */
 	}
 
 	private void buffer() {
-		BufferStrategy bf = this.getBufferStrategy();
-		Graphics g = null;
-		try {
-			g = bf.getDrawGraphics();
-			jogar(g);
-		} finally {
-			g.dispose();
+
+		jogar();
+
+	}
+
+	@Override
+	public void mover(String massage) throws RemoteException {
+		if (massage.equals("carro1d")) {
+			key.right = true;
+			mapa.mover(key);
+		} else if (massage.equals("carro1e")) {
+			key.left = true;
+			mapa.mover(key);
+		} else if (massage.equals("carro2d")) {
+			key.d = true;
+			mapa.mover(key);
+		} else if (massage.equals("carro2e")) {
+			key.a = true;
+			mapa.mover(key);
+		} else if (massage.equals("carro3d")) {
+			key.j = true;
+			mapa.mover(key);
+		} else if (massage.equals("carro3e")) {
+			key.g = true;
+			mapa.mover(key);
+		} else if (massage.equals("enter")) {
+			key.enter = true;
+			mapa.mover(key);
 		}
-		bf.show();
-		Toolkit.getDefaultToolkit().sync();
+	}
+
+	@Override
+	public String atualizar() throws RemoteException {
+		String json = gson.toJson(Servidor.mapa);
+		return json;
+	}
+
+	@Override
+	public void addJogador() throws RemoteException {
+		jogador++;
+		System.out.println(jogador);
 	}
 
 }

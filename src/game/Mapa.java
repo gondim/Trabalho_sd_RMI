@@ -10,9 +10,9 @@ public class Mapa implements Serializable {
 	public Carro carro1;
 	public Carro carro2;
 	public Carro carro3;
-	List<CarroInimigo> array1 = new ArrayList<CarroInimigo>();
-	List<CarroInimigo> array2 = new ArrayList<CarroInimigo>();
-	List<CarroInimigo> array3 = new ArrayList<CarroInimigo>();
+	public List<CarroInimigo> array1 = new ArrayList<CarroInimigo>();
+	public List<CarroInimigo> array2 = new ArrayList<CarroInimigo>();
+	public List<CarroInimigo> array3 = new ArrayList<CarroInimigo>();
 	private int cont;
 	private int fase;
 	public boolean jogar;
@@ -53,7 +53,7 @@ public class Mapa implements Serializable {
 			{ 0, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 0, 3, 3, 3, 3 },
 			{ 0, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 0, 3, 3, 3, 3 } };
 
-	public void draw(Graphics g) {
+	public void draw(Graphics g){
 		int size = 35;
 		for (int i = 0; i < mapa.length; i++) {
 			for (int j = 0; j < mapa[0].length; j++) {
@@ -72,6 +72,7 @@ public class Mapa implements Serializable {
 		carro1.draw(g);
 		carro2.draw(g);
 		carro3.draw(g);
+		
 		array1.get(0).draw1(g);
 		array2.get(0).draw2(g);
 		array3.get(0).draw3(g);
@@ -79,6 +80,18 @@ public class Mapa implements Serializable {
 			array1.get(1).draw1(g);
 			array2.get(1).draw2(g);
 			array3.get(1).draw3(g);
+		}
+	}
+	
+	public void atualizar() {
+		
+		array1.get(0).atualizar();;
+		array2.get(0).atualizar();;
+		array3.get(0).atualizar();;
+		if (array1.get(0).getY() >= 400) {
+			array1.get(1).atualizar();;
+			array2.get(1).atualizar();;
+			array3.get(1).atualizar();;
 			if (array1.get(0).getY() >= 21 * 35) {
 				array1.remove(0);
 				array2.remove(0);
@@ -96,6 +109,10 @@ public class Mapa implements Serializable {
 				}
 			}
 		}
+
+	}
+	
+	public void colidiu(){
 		if (carro1.coliderPlayer.intersects(array1.get(0).coliderInimigo)
 				|| carro1.coliderPlayer.intersects(array2.get(0).coliderInimigo)
 				|| carro1.coliderPlayer.intersects(array3.get(0).coliderInimigo)) {
@@ -111,7 +128,6 @@ public class Mapa implements Serializable {
 				|| carro3.coliderPlayer.intersects(array3.get(0).coliderInimigo)) {
 			carro3.setColidiu(true);
 		}
-
 	}
 
 	public void placar(Graphics g) {
