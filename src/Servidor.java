@@ -1,5 +1,4 @@
 
-
 import java.awt.Graphics;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -139,7 +138,7 @@ public class Servidor extends UnicastRemoteObject implements SevidorInterface {
 		if (jogador < 3) {
 		} else {
 			if (mapa.carro1.isColidiu() && mapa.carro2.isColidiu() && mapa.carro3.isColidiu()) {
-				
+
 			} else {
 				mapa.jogar = true;
 				mapa.atualizar();
@@ -179,7 +178,7 @@ public class Servidor extends UnicastRemoteObject implements SevidorInterface {
 			key.g = true;
 			mapa.mover(key);
 		} else if (massage.equals("restart")) {
-			if(mapa.carro1.isColidiu() && mapa.carro2.isColidiu() && mapa.carro3.isColidiu())
+			if (mapa.carro1.isColidiu() && mapa.carro2.isColidiu() && mapa.carro3.isColidiu())
 				restart();
 		}
 	}
@@ -191,9 +190,16 @@ public class Servidor extends UnicastRemoteObject implements SevidorInterface {
 	}
 
 	@Override
-	public void addJogador() throws RemoteException {
+	public String addJogador() throws RemoteException {
 		jogador++;
 		System.out.println(jogador);
+		if (jogador == 1) {
+			return "carro1";
+		} else if (jogador == 2) {
+			return "carro2";
+		} else {
+			return "carro3";
+		}
 	}
 
 	@Override
